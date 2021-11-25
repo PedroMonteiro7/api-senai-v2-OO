@@ -18,11 +18,17 @@ class ModelPessoa {
 
         //RECEBIMENTO DOS DADOS VINDOS DO POSTMAN
         $this->_codPessoa = $dadosPessoa->cod_pessoa ?? null;
-        $this->_nome = $dadosPessoa->nome ?? null;
-        $this->_sobrenome = $dadosPessoa->sobrenome ?? null;
-        $this->_email = $dadosPessoa->email ?? null;
-        $this->_celular = $dadosPessoa->celular ?? null;
-        $this->_fotografia = $dadosPessoa->fotografia ?? null;
+        // $this->_nome = $dadosPessoa->nome ?? null;
+        // $this->_sobrenome = $dadosPessoa->sobrenome ?? null;
+        // $this->_email = $dadosPessoa->email ?? null;
+        // $this->_celular = $dadosPessoa->celular ?? null;
+        // $this->_fotografia = $dadosPessoa->fotografia ?? null;
+
+        $this->_nome = $_POST["nome"];
+        $this->_sobrenome = $_POST["sobrenome"];
+        $this->_email = $_POST["email"];
+        $this->_celular = $_POST["celular"];
+        $this->_fotografia = $_FILES["fotografia"]["name"];
 
         $this->_conn = $conn;
 
@@ -63,13 +69,18 @@ class ModelPessoa {
 
         $sql = "INSERT INTO tbl_pessoa (nome, sobrenome, email, celular, fotografia) VALUES (?, ?, ?, ?, ?)";
 
+        $extensao = pathinfo($this->_fotografia, PATHINFO_EXTENSION);
+        $novoNomeArquivo = md5(microtime()) . ".$extensao";
+
+        move_uploaded_file($_FILES["fotografia"]["tmp_name"], "../upload/$novoNomeArquivo");
+
         $stm = $this->_conn->prepare($sql);
 
         $stm->bindValue(1, $this->_nome);
         $stm->bindValue(2, $this->_sobrenome);
         $stm->bindValue(3, $this->_email);
         $stm->bindValue(4, $this->_celular);
-        $stm->bindValue(5, $this->_fotografia);
+        $stm->bindValue(5, $novoNomeArquivo);
 
         if ($stm->execute()) {
             return "Sucess";

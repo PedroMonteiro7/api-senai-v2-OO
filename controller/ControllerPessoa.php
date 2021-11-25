@@ -4,6 +4,7 @@
 
         private $_method;
         private $_modelPessoa;
+        private $_codPessoa;
 
         public function __construct($model) {
 
